@@ -1,6 +1,6 @@
 ## Search App Circuit
 
-[circuit](https://slackhq.github.io/circuit/)를 사용한 강아지 사진 검색 앱.
+[Circuit](https://slackhq.github.io/circuit/)를 사용한 강아지 사진 검색 앱.
 
 아키텍처 샘플 용도로 제작되었습니다.
 
