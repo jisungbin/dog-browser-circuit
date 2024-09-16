@@ -1,21 +1,22 @@
 [versions]
 gradle-android = "8.6.0"
 
-kotlin-core = "2.0.0"
+kotlin-core = "2.0.20"
 kotlin-coroutines = "1.9.0"
+kotlin-symbolProcessing = "2.0.20-1.0.25"
 kotlin-immutableCollections = "0.3.8"
 
+android-hilt = "2.52"
 androidx-activity = "1.9.2"
-androidx-datastore = "1.1.1"
 
 compose-material3 = "1.3.0"
 compose-activity = "1.9.2"
-compose-stableMarker = "1.0.5"
 
-okio = "3.9.0"
+okio = "3.9.1"
 okhttp = "5.0.0-alpha.14"
 moshi = "1.15.1"
 
+circuit = "0.23.1"
 timber = "5.0.1"
 
 spotless = "6.25.0"
@@ -24,7 +25,10 @@ ktlint = "1.3.1"
 test-assertk = "0.28.1"
 
 [plugins]
-andriod-application = { id = "com.android.application", version.ref = "gradle-android" }
+android-application = { id = "com.android.application", version.ref = "gradle-android" }
+android-hilt = { id = "com.google.dagger.hilt.android", version.ref = "android-hilt" }
+
+kotlin-symbolProcesing = { id = "com.google.devtools.ksp", version.ref = "kotlin-symbolProcessing" }
 
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 
@@ -32,14 +36,25 @@ spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-immutableCollections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-immutableCollections" }
 
+android-hilt-ksp = { module = "com.google.dagger:hilt-compiler", version.ref = "android-hilt" }
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
 compose-activity = { module = "androidx.activity:activity-compose", version.ref = "compose-activity" }
 
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+okhttp-core = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-coroutines = { module = "com.squareup.okhttp3:okhttp-coroutines", version.ref = "okhttp" }
+okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
+moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
+
+circuit-foundation = { module = "com.slack.circuit:circuit-foundation", version.ref = "circuit" }
+circuitx-overlay = { module = "com.slack.circuit:circuitx-overlays", version.ref = "circuit" }
+
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 test-assertk = { module = "com.willowtreeapps.assertk:assertk", version.ref = "test-assertk" }
 test-kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
+test-okhttp-mockserver = { module = "com.squareup.okhttp3:mockwebserver3-junit5", version.ref = "okhttp" }
 
 ktlint-cli = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" } # for Renovate

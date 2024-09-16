@@ -10,7 +10,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  alias(libs.plugins.andriod.application) apply false
+  alias(libs.plugins.android.application) apply false
+  alias(libs.plugins.android.hilt) apply false
+  alias(libs.plugins.kotlin.symbolProcesing) apply false
   kotlin("android") version libs.versions.kotlin.core apply false
   kotlin("jvm") version libs.versions.kotlin.core apply false
   kotlin("plugin.compose") version libs.versions.kotlin.core apply false

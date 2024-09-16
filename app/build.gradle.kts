@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
+
 /*
  * Developed by Ji Sungbin 2024.
  *
@@ -6,7 +8,7 @@
  */
 
 plugins {
-  id("com.android.application")
+  id(libs.plugins.android.application.get().pluginId)
   kotlin("android")
   kotlin("plugin.compose")
 }
@@ -45,7 +47,7 @@ kotlin {
 }
 
 composeCompiler {
-  enableNonSkippingGroupOptimization = true
+  featureFlags = setOf(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 }
 
 dependencies {
