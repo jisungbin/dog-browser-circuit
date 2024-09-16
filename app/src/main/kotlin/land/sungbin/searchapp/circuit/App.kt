@@ -8,9 +8,11 @@
 package land.sungbin.searchapp.circuit
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
-class App : Application() {
+@HiltAndroidApp
+public class App : Application() {
   override fun onCreate() {
     super.onCreate()
     Timber.plant(Timber.DebugTree())

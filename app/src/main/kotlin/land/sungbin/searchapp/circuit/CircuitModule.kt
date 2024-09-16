@@ -1,0 +1,36 @@
+/*
+ * Developed by Ji Sungbin 2024.
+ *
+ * Licensed under the MIT.
+ * Please see full license: https://github.com/jisungbin/search-app-circuit/blob/trunk/LICENSE
+ */
+
+package land.sungbin.searchapp.circuit
+
+import com.slack.circuit.foundation.Circuit
+import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.ui.Ui
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.android.scopes.ActivityRetainedScoped
+import dagger.multibindings.Multibinds
+
+@Module
+@InstallIn(ActivityRetainedComponent::class)
+public abstract class CircuitModule {
+  @Multibinds public abstract fun presenterFactories(): Set<Presenter.Factory>
+  @Multibinds public abstract fun uiFactories(): Set<Ui.Factory>
+
+  public companion object {
+    @[Provides ActivityRetainedScoped]
+    public fun provideCircuit(
+      presenterFactories: @JvmSuppressWildcards Set<Presenter.Factory>,
+      uiFactories: @JvmSuppressWildcards Set<Ui.Factory>,
+    ): Circuit = Circuit.Builder()
+      .addPresenterFactories(presenterFactories)
+      .addUiFactories(uiFactories)
+      .build()
+  }
+}

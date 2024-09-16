@@ -13,6 +13,7 @@ plugins {
   id(libs.plugins.kotlin.symbolProcesing.get().pluginId)
   kotlin("android")
   kotlin("plugin.compose")
+  id("kotlin-parcelize")
 }
 
 android {
@@ -39,6 +40,7 @@ ksp {
 }
 
 kotlin {
+  explicitApi()
   compilerOptions {
     optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
   }
@@ -54,12 +56,14 @@ composeCompiler {
 
 dependencies {
   implementation(libs.androidx.activity)
+  implementation(libs.androidx.datastore)
 
   implementation(libs.android.hilt.runtime)
   ksp(libs.android.hilt.ksp)
 
   implementation(libs.compose.foundation)
   implementation(libs.compose.material3)
+  implementation(libs.compose.telephoto)
   implementation(libs.compose.activity)
 
   implementation(libs.kotlin.coroutines)
@@ -74,12 +78,16 @@ dependencies {
   implementation(libs.circuit.foundation)
   implementation(libs.circuit.codegen.annotation)
   ksp(libs.circuit.codegen.ksp)
+
+  implementation(libs.circuitx.android)
   implementation(libs.circuitx.overlay)
 
   implementation(libs.timber)
 
   testImplementation(kotlin("test-junit5"))
   testImplementation(libs.test.assertk)
+  testImplementation(libs.test.circuit)
+  testImplementation(libs.test.turbine)
   testImplementation(libs.test.kotlin.coroutines)
   testImplementation(libs.test.okhttp.mockwebserver)
 }
