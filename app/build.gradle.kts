@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
-
 /*
  * Developed by Ji Sungbin 2024.
  *
@@ -7,33 +5,37 @@ import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
  * Please see full license: https://github.com/jisungbin/search-app-circuit/blob/trunk/LICENSE
  */
 
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
+
 plugins {
   id(libs.plugins.android.application.get().pluginId)
+  id(libs.plugins.android.hilt.get().pluginId)
+  id(libs.plugins.kotlin.symbolProcesing.get().pluginId)
   kotlin("android")
   kotlin("plugin.compose")
 }
 
 android {
   namespace = "land.sungbin.searchapp.circuit"
-  compileSdk = 34
+  compileSdk = 35
 
   defaultConfig {
     minSdk = 23
-    targetSdk = 34
-  }
-
-  buildFeatures {
-    buildConfig = true
+    targetSdk = 35
   }
 
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
   }
 
   sourceSets {
     getByName("main").java.srcDir("src/main/kotlin")
   }
+}
+
+ksp {
+  arg("circuit.codegen.mode", "hilt")
 }
 
 kotlin {
@@ -53,15 +55,31 @@ composeCompiler {
 dependencies {
   implementation(libs.androidx.activity)
 
-  implementation(libs.compose.activity)
+  implementation(libs.android.hilt.runtime)
+  ksp(libs.android.hilt.ksp)
+
+  implementation(libs.compose.foundation)
   implementation(libs.compose.material3)
+  implementation(libs.compose.activity)
 
   implementation(libs.kotlin.coroutines)
   implementation(libs.kotlin.immutableCollections)
+
+  implementation(libs.okio)
+  implementation(libs.okhttp.core)
+  implementation(libs.okhttp.coroutines)
+  implementation(libs.okhttp.logging)
+  implementation(libs.moshi)
+
+  implementation(libs.circuit.foundation)
+  implementation(libs.circuit.codegen.annotation)
+  ksp(libs.circuit.codegen.ksp)
+  implementation(libs.circuitx.overlay)
 
   implementation(libs.timber)
 
   testImplementation(kotlin("test-junit5"))
   testImplementation(libs.test.assertk)
   testImplementation(libs.test.kotlin.coroutines)
+  testImplementation(libs.test.okhttp.mockwebserver)
 }
