@@ -13,8 +13,6 @@ import timber.log.Timber
 class App : Application() {
   override fun onCreate() {
     super.onCreate()
-
-    // TODO remove this line before release
     Timber.plant(Timber.DebugTree())
   }
 }
