@@ -1,3 +1,10 @@
+/*
+ * Developed by Ji Sungbin 2024.
+ *
+ * Licensed under the MIT.
+ * Please see full license: https://github.com/jisungbin/dog-browser-circuit/blob/trunk/LICENSE
+ */
+
 @file:OptIn(ExperimentalOkHttpApi::class)
 
 package land.sungbin.dogbrowser.circuit.presenter
@@ -60,7 +67,7 @@ class BrowseDogPresenterTest {
   },
   "status": "success"
 }
-          """.trimIndent(),
+      """.trimIndent(),
     )
 
     "/breeds/image" respond MockResponse(
@@ -74,7 +81,7 @@ class BrowseDogPresenterTest {
   ],
   "status": "success"
 }
-              """.trimIndent(),
+      """.trimIndent(),
     )
 
     "/breed/hound/images" respond MockResponse(
@@ -88,7 +95,7 @@ class BrowseDogPresenterTest {
   ],
   "status": "success"
 }
-              """.trimIndent(),
+      """.trimIndent(),
     )
   }
 
@@ -272,7 +279,7 @@ class BrowseDogPresenterTest {
   "message": {},
   "status": "empty"
 }
-          """.trimIndent(),
+        """.trimIndent(),
       )
 
       "/breeds/image" respond MockResponse(
@@ -282,7 +289,7 @@ class BrowseDogPresenterTest {
   "message": [],
   "status": "empty-2"
 }
-              """.trimIndent(),
+        """.trimIndent(),
       )
     }
     presenter.test {

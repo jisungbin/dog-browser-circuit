@@ -1,3 +1,10 @@
+/*
+ * Developed by Ji Sungbin 2024.
+ *
+ * Licensed under the MIT.
+ * Please see full license: https://github.com/jisungbin/dog-browser-circuit/blob/trunk/LICENSE
+ */
+
 @file:OptIn(ExperimentalOkHttpApi::class)
 
 package land.sungbin.dogbrowser.circuit.repository
@@ -52,7 +59,7 @@ class DogsTest {
   },
   "status": "success"
 }
-          """.trimIndent(),
+        """.trimIndent(),
       ),
     )
 
@@ -87,7 +94,7 @@ class DogsTest {
   },
   "status": "fail"
 }
-          """.trimIndent(),
+        """.trimIndent(),
       ),
     )
 
@@ -110,7 +117,7 @@ class DogsTest {
   ],
   "status": "success"
 }
-              """.trimIndent(),
+            """.trimIndent(),
           )
           else -> fail("Unexpected request: $this")
         }
@@ -141,7 +148,7 @@ class DogsTest {
   ],
   "status": "success"
 }
-              """.trimIndent(),
+            """.trimIndent(),
           )
           else -> fail("Unexpected request: $this")
         }
@@ -172,7 +179,7 @@ class DogsTest {
   ],
   "status": "success"
 }
-              """.trimIndent(),
+            """.trimIndent(),
           )
           else -> fail("Unexpected request: $this")
         }
@@ -203,7 +210,7 @@ class DogsTest {
   ],
   "status": "success"
 }
-              """.trimIndent(),
+            """.trimIndent(),
           )
           else -> fail("Unexpected request: $this")
         }
