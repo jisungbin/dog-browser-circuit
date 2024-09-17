@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.util.fastMap
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.retained.produceRetainedState
@@ -33,8 +34,8 @@ import kotlinx.coroutines.launch
 import land.sungbin.dogbrowser.circuit.overlay.OverlayExceptionHandler
 import land.sungbin.dogbrowser.circuit.repository.Dogs
 import land.sungbin.dogbrowser.circuit.repository.Favorites
-import land.sungbin.dogbrowser.circuit.screen.DogViewerScreen
 import land.sungbin.dogbrowser.circuit.screen.BrowseDogScreen
+import land.sungbin.dogbrowser.circuit.screen.DogViewerScreen
 
 public class BrowseDogPresenter @AssistedInject constructor(
   private val dogs: Dogs,
@@ -58,7 +59,7 @@ public class BrowseDogPresenter @AssistedInject constructor(
         is BrowseDogScreen.Event.Browse -> {
           scope.launch(exceptionHandler) {
             val images = this@BrowseDogPresenter.dogs.images(breed = event.breed, count = event.count)
-            dogs = images.map { image -> Dog(breed = event.breed, image = image) }.toImmutableList()
+            dogs = images.fastMap { image -> Dog(breed = event.breed, image = image) }.toImmutableList()
           }
         }
         is BrowseDogScreen.Event.AddFavorite -> {
