@@ -2,7 +2,7 @@
 
 [Circuit](https://slackhq.github.io/circuit/)를 사용한 강아지 사진 브라우징 앱.
 
-아키텍처 샘플 용도로 제작되었습니다.
+아키텍처 샘플 용도로 매우 빠르게(큰 고민을 하지 않음) 제작되었습니다.
 
 ### Credits
 
