@@ -59,7 +59,7 @@ class FavoriteDogPresenterTest {
     favorites += dog("test.jpg")
     favorites += dog("test2.jpg")
     presenter.test {
-      awaitItem() // load favorites
+      skipItems(1) // load favorites
       awaitItem().eventSink(FavoriteDogScreen.Event.RemoveFavorite(dog("test.jpg")))
 
       assertThat(awaitItem().dogs).containsExactly(dog("test2.jpg").copy(favorite = true))
@@ -71,7 +71,7 @@ class FavoriteDogPresenterTest {
   @Test fun navigateGoToViewerEventSinked() = runTest {
     favorites += dog("test.jpg")
     presenter.test {
-      awaitItem() // load favorites
+      skipItems(1) // load favorites
       awaitItem().eventSink(FavoriteDogScreen.Event.GoToViewer(dog("test.jpg")))
 
       assertThat(navigator.awaitNextScreen()).isEqualTo(DogViewerScreen(dog("test.jpg")))
