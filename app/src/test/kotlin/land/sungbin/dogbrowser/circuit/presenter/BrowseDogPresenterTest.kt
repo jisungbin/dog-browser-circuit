@@ -279,14 +279,16 @@ class BrowseDogPresenterTest {
       )
     }
     presenter.test {
-      awaitItem().eventSink(BrowseDogScreen.Event.Browse())
+      skipItems(1) // load breeds
       val state = awaitItem()
 
       assertThat(state.breeds)
         .isFailure()
         .hasMessage("status is not success: empty")
 
-      assertThat(state.dogs)
+      state.eventSink(BrowseDogScreen.Event.Browse())
+
+      assertThat(awaitItem().dogs)
         .isFailure()
         .hasMessage("status is not success: empty-2")
 
