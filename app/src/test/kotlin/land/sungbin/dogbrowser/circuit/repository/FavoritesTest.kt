@@ -97,7 +97,7 @@ class FavoritesTest {
     }
   }
 
-  private fun dog(breed: String) = Dog(breed = breed, image = "", favorite = false)
+  private fun dog(breed: String) = Dog(breed = breed, image = "", favorite = true)
 
   class FavoriteDestinationTempFileFactory : TempDirFactory {
     override fun createTempDirectory(

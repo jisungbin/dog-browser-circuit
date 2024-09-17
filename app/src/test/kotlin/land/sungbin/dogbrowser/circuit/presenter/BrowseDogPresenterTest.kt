@@ -115,7 +115,7 @@ class BrowseDogPresenterTest {
     presenter = BrowseDogPresenter(dogs, favorites, navigator)
   }
 
-  @Test fun presentDogsAndBreedsInitializeState() = runTest {
+  @Test fun presentDogsAndBreedsInitializedState() = runTest {
     server.dispatcher = defaultDispatcher
     presenter.test {
       assertThat(awaitItem()).all {
@@ -126,6 +126,7 @@ class BrowseDogPresenterTest {
         prop(BrowseDogScreen.State::dogs).isSuccess().isEmpty()
         prop(BrowseDogScreen.State::breeds).isSuccess().containsOnly("hound")
       }
+
       ensureAllEventsConsumed()
     }
   }
@@ -255,21 +256,6 @@ class BrowseDogPresenterTest {
     }
   }
 
-  @Test fun presentGoToViewerEventSinked() = runTest {
-    server.dispatcher = defaultDispatcher
-    presenter.test {
-      skipItems(1) // load breeds
-      awaitItem().eventSink(BrowseDogScreen.Event.Browse())
-      awaitItem().eventSink(BrowseDogScreen.Event.GoToViewer(dogImage("test.jpg")))
-
-      assertThat(navigator.awaitNextScreen())
-        .isInstanceOf<DogViewerScreen>()
-        .prop(DogViewerScreen::dog).isEqualTo(dogImage("test.jpg"))
-
-      ensureAllEventsConsumed()
-    }
-  }
-
   @Test fun presentFailedState() = runTest {
     server.dispatcher = dispatcher {
       "/breeds/list/all" respond MockResponse(
@@ -294,15 +280,30 @@ class BrowseDogPresenterTest {
     }
     presenter.test {
       awaitItem().eventSink(BrowseDogScreen.Event.Browse())
-      val event = awaitItem()
+      val state = awaitItem()
 
-      assertThat(event.breeds)
+      assertThat(state.breeds)
         .isFailure()
         .hasMessage("status is not success: empty")
 
-      assertThat(event.dogs)
+      assertThat(state.dogs)
         .isFailure()
         .hasMessage("status is not success: empty-2")
+
+      ensureAllEventsConsumed()
+    }
+  }
+
+  @Test fun navigateGoToViewerEventSinked() = runTest {
+    server.dispatcher = defaultDispatcher
+    presenter.test {
+      skipItems(1) // load breeds
+      awaitItem().eventSink(BrowseDogScreen.Event.Browse())
+      awaitItem().eventSink(BrowseDogScreen.Event.GoToViewer(dogImage("test.jpg")))
+
+      assertThat(navigator.awaitNextScreen())
+        .isInstanceOf<DogViewerScreen>()
+        .prop(DogViewerScreen::dog).isEqualTo(dogImage("test.jpg"))
 
       ensureAllEventsConsumed()
     }
