@@ -9,12 +9,10 @@ package land.sungbin.dogbrowser.circuit.presenter
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -33,12 +31,10 @@ public class FavoriteDogPresenter @AssistedInject constructor(
   @Assisted private val navigator: Navigator,
 ) : Presenter<FavoriteDogScreen.State> {
   @Composable override fun present(): FavoriteDogScreen.State {
-    val overlay = LocalOverlayHost.current
-    val scope = rememberStableCoroutineScope()
-    val exceptionHandler = remember(scope, overlay) { OverlayExceptionHandlerKey(scope, overlay) }
+    val scope = rememberCoroutineScope()
 
     val dogs: ImmutableList<Dog> by produceRetainedState(persistentListOf()) {
-      scope.launch(exceptionHandler) {
+      scope.launch {
         favorites.observe().collect { dogs ->
           value = dogs.toPersistentList()
         }
@@ -48,7 +44,7 @@ public class FavoriteDogPresenter @AssistedInject constructor(
     return FavoriteDogScreen.State(dogs = dogs) { event ->
       when (event) {
         is FavoriteDogScreen.Event.RemoveFavorite -> {
-          scope.launch(exceptionHandler) { favorites -= event.dog }
+          scope.launch { favorites -= event.dog }
         }
         is FavoriteDogScreen.Event.GoToViewer -> {
           navigator.goTo(DogViewerScreen(event.dog))

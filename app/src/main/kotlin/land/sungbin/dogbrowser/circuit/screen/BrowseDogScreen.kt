@@ -17,8 +17,8 @@ import land.sungbin.dogbrowser.circuit.presenter.Dog
 
 @Parcelize public data object BrowseDogScreen : Screen {
   public data class State(
-    public val dogs: ImmutableList<Dog>,
-    public val breeds: ImmutableSet<String>,
+    public val dogs: Result<ImmutableList<Dog>>,
+    public val breeds: Result<ImmutableSet<String>>,
     public val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
