@@ -55,6 +55,7 @@ composeCompiler {
 }
 
 dependencies {
+  implementation(libs.androidx.annotation)
   implementation(libs.androidx.activity)
   implementation(libs.androidx.datastore)
 
@@ -88,6 +89,7 @@ dependencies {
   testImplementation(libs.test.assertk)
   testImplementation(libs.test.circuit)
   testImplementation(libs.test.turbine)
+  testImplementation(libs.test.okio.fs)
   testImplementation(libs.test.kotlin.coroutines)
   testImplementation(libs.test.okhttp.mockwebserver)
 }

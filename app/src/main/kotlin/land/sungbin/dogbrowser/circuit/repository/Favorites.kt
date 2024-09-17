@@ -5,80 +5,97 @@
  * Please see full license: https://github.com/jisungbin/dog-browser-circuit/blob/trunk/LICENSE
  */
 
+@file:Suppress("INVISIBLE_REFERENCE", "ERROR_SUPPRESSION") // FIXME KT-67920
+
 package land.sungbin.dogbrowser.circuit.repository
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
+import androidx.datastore.core.DataMigration
+import androidx.datastore.core.okio.OkioStorage
+import androidx.datastore.preferences.core.PreferenceDataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.PreferencesSerializer
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStoreFile
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ActivityRetainedScoped
 import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import land.sungbin.dogbrowser.circuit.presenter.Dog
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toOkioPath
 
-public interface Favorites {
-  public suspend operator fun plusAssign(dog: Dog)
-  public suspend operator fun minusAssign(dog: Dog)
-  public suspend operator fun contains(dog: Dog): Boolean
-  public suspend operator fun invoke(): List<Dog>
+@Singleton public class Favorites @VisibleForTesting constructor(
+  fs: FileSystem,
+  destination: Path,
+  scope: CoroutineScope,
+) {
+  @Inject public constructor(@ApplicationContext context: Context) : this(
+    fs = FileSystem.SYSTEM,
+    destination = context.preferencesDataStoreFile(DATA_DESTINATION).toOkioPath(),
+    scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+  )
 
-  // TODO https://github.com/Kotlin/kotlinx.coroutines/issues/3274
-  public fun observe(): Flow<List<Dog>>
-}
+  private val dataStore = PreferenceDataStore(
+    delegate = PreferenceDataStoreFactory.create(
+      storage = OkioStorage(fs, PreferencesSerializer) {
+        require(destination.name.endsWith(DATA_EXTENSION)) {
+          "File extension for file: ${destination.name} does not match required extension for" +
+            " Preferences file: $DATA_EXTENSION"
+        }
+        destination
+      },
+      corruptionHandler = null,
+      migrations = emptyList<DataMigration<Preferences>>(),
+      scope = scope,
+    ),
+  )
 
-@Module
-@InstallIn(ActivityRetainedComponent::class)
-public abstract class FavoritesModule {
-  @[Binds ActivityRetainedScoped]
-  public abstract fun bindFavorites(real: RealFavorites): Favorites
-}
-
-public class RealFavorites @Inject constructor(
-  @ApplicationContext private val context: Context,
-) : Favorites {
-  private val dataStore = PreferenceDataStoreFactory.create {
-    context.preferencesDataStoreFile("dog-favorites")
-  }
-
-  public override suspend fun plusAssign(dog: Dog) {
+  public suspend operator fun plusAssign(dog: Dog) {
     val favorites = dataStore.data.first()[KEY_FAVORITES].orEmpty()
     dataStore.edit { preferences ->
       preferences[KEY_FAVORITES] = favorites + dog.toJson()
     }
   }
 
-  public override suspend fun minusAssign(dog: Dog) {
+  public suspend operator fun minusAssign(dog: Dog) {
     val favorites = dataStore.data.first()[KEY_FAVORITES].orEmpty()
     dataStore.edit { preferences ->
       preferences[KEY_FAVORITES] = favorites - dog.toJson()
     }
   }
 
-  public override suspend fun contains(dog: Dog): Boolean {
+  public suspend operator fun contains(dog: Dog): Boolean {
     val favorites = dataStore.data.first()[KEY_FAVORITES].orEmpty()
     return dog.toJson() in favorites
   }
 
-  public override suspend fun invoke(): List<Dog> {
+  public suspend operator fun invoke(): List<Dog> {
     val favorites = dataStore.data.first()[KEY_FAVORITES].orEmpty()
     return favorites.map(Dog::fromJson)
   }
 
-  public override fun observe(): Flow<List<Dog>> =
+  // TODO https://github.com/Kotlin/kotlinx.coroutines/issues/3274
+  //  operator fun iterator(): Iterator<List<Dog>>
+  public fun observe(): Flow<List<Dog>> =
     dataStore.data
       .mapNotNull { preferences -> preferences[KEY_FAVORITES] }
       .map { favorites -> favorites.map(Dog::fromJson) }
 
   public companion object Key {
     private val KEY_FAVORITES = stringSetPreferencesKey("favorites")
+
+    private const val DATA_DESTINATION = "dog-favorites"
+    public const val DATA_EXTENSION: String = PreferencesSerializer.fileExtension
   }
 }
