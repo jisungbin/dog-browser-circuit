@@ -7,6 +7,7 @@
 
 package land.sungbin.dogbrowser.circuit.repository
 
+import androidx.annotation.VisibleForTesting
 import com.squareup.moshi.JsonReader
 import java.io.IOException
 import javax.inject.Inject
@@ -17,11 +18,12 @@ import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.coroutines.executeAsync
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.BufferedSource
 import timber.log.Timber
 
-@Singleton public class Dogs(
+@Singleton public class Dogs @VisibleForTesting constructor(
   base: String,
   private val dispatcher: CoroutineDispatcher,
 ) {
@@ -38,16 +40,18 @@ import timber.log.Timber
     )
     .build()
 
+  /** @return Dog's breed names */
   @Throws(IOException::class, IllegalStateException::class)
   public suspend fun breeds(): List<String> {
     val result = withContext(dispatcher) {
       val url = base.newBuilder().addPathSegments("breeds/list/all").build()
-      client.newCall(Request.Builder().url(url).build()).execute()
+      client.newCall(Request.Builder().url(url).build()).executeAsync()
     }
-    check(!result.isSuccessful) { "Failed to fetch breeds: ${result.code}" }
+    check(result.isSuccessful) { "Failed to fetch breeds: ${result.code}" }
     return result.body.source().parseBreeds()
   }
 
+  /** @return Dog image urls */
   @Throws(IOException::class, IllegalStateException::class)
   public suspend fun images(
     breed: String? = null,
@@ -57,12 +61,11 @@ import timber.log.Timber
       val url = base.newBuilder()
         .addPathSegments(if (breed == null) "breeds" else "breed/$breed")
         .addPathSegment(if (breed == null) "image" else "images")
-        .addPathSegment("random")
-        .apply { if (count != null) addPathSegment(count.toString()) }
+        .apply { if (count != null) addPathSegments("random/$count") }
         .build()
-      client.newCall(Request.Builder().url(url).build()).execute()
+      client.newCall(Request.Builder().url(url).build()).executeAsync()
     }
-    check(!result.isSuccessful) { "Failed to fetch images: ${result.code}" }
+    check(result.isSuccessful) { "Failed to fetch images: ${result.code}" }
     return result.body.source().parseImages()
   }
 
