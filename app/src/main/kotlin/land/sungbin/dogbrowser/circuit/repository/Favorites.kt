@@ -85,8 +85,6 @@ import okio.Path.Companion.toOkioPath
     return favorites.map(Dog::fromJson)
   }
 
-  // TODO https://github.com/Kotlin/kotlinx.coroutines/issues/3274
-  //  operator fun iterator(): Iterator<List<Dog>>
   public fun observe(): Flow<List<Dog>> =
     dataStore.data
       .mapNotNull { preferences -> preferences[KEY_FAVORITES] }
