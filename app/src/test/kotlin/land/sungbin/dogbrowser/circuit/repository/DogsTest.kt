@@ -34,10 +34,9 @@ class DogsTest {
 
   @Test fun getAllBreedsWithSuccess() = runTest {
     server.enqueue(
-      MockResponse.Builder()
-        .body(
-// language=json
-          """
+      MockResponse(
+        // language=json
+        body = """
 {
   "message": {
     "affenpinscher": [],
@@ -54,8 +53,7 @@ class DogsTest {
   "status": "success"
 }
           """.trimIndent(),
-        )
-        .build(),
+      ),
     )
 
     assertThat(dogs.breeds()).containsExactly(
@@ -72,10 +70,9 @@ class DogsTest {
 
   @Test fun getAllBreedsWithFail() = runTest {
     server.enqueue(
-      MockResponse.Builder()
-        .body(
-// language=json
-          """
+      MockResponse(
+        // language=json
+        body = """
 {
   "message": {
     "affenpinscher": [],
@@ -91,8 +88,7 @@ class DogsTest {
   "status": "fail"
 }
           """.trimIndent(),
-        )
-        .build(),
+      ),
     )
 
     assertFailure { dogs.breeds() }.hasMessage("status is not success: fail")
@@ -102,31 +98,29 @@ class DogsTest {
     server.dispatcher = object : Dispatcher() {
       override fun dispatch(request: RecordedRequest): MockResponse =
         when (request.requestUrl?.encodedPath) {
-          "/breed/hound/images" -> MockResponse.Builder()
-            .body(
-// language=json
-              """
+          "/breed/hound/images" -> MockResponse(
+            // language=json
+            body = """
 {
   "message": [
-    "https://images.dog.ceo/breeds/hound-afghan/n02088094_1003.jpg",
-    "https://images.dog.ceo/breeds/hound-afghan/n02088094_10263.jpg",
-    "https://images.dog.ceo/breeds/hound-afghan/n02088094_115.jpg",
-    "https://images.dog.ceo/breeds/hound-afghan/n02088094_1150.jpg"
+    "test.jpg",
+    "test2.jpg",
+    "test3.jpg",
+    "test4.jpg"
   ],
   "status": "success"
 }
               """.trimIndent(),
-            )
-            .build()
+          )
           else -> fail("Unexpected request: $this")
         }
     }
 
     assertThat(dogs.images(breed = "hound")).containsExactly(
-      "https://images.dog.ceo/breeds/hound-afghan/n02088094_1003.jpg",
-      "https://images.dog.ceo/breeds/hound-afghan/n02088094_10263.jpg",
-      "https://images.dog.ceo/breeds/hound-afghan/n02088094_115.jpg",
-      "https://images.dog.ceo/breeds/hound-afghan/n02088094_1150.jpg",
+      "test.jpg",
+      "test2.jpg",
+      "test3.jpg",
+      "test4.jpg",
     )
   }
 
@@ -134,33 +128,31 @@ class DogsTest {
     server.dispatcher = object : Dispatcher() {
       override fun dispatch(request: RecordedRequest): MockResponse =
         when (request.requestUrl?.encodedPath) {
-          "/breed/hound/images/random/5" -> MockResponse.Builder()
-            .body(
-// language=json
-              """
+          "/breed/hound/images/random/5" -> MockResponse(
+            // language=json
+            body = """
 {
   "message": [
-    "https://images.dog.ceo/breeds/hound-afghan/n02088094_1003.jpg",
-    "https://images.dog.ceo/breeds/hound-afghan/n02088094_10263.jpg",
-    "https://images.dog.ceo/breeds/hound-afghan/n02088094_115.jpg",
-    "https://images.dog.ceo/breeds/hound-afghan/n02088094_1150.jpg",
-    "https://images.dog.ceo/breeds/hound-afghan/n02088094_11536.jpg"
+    "test.jpg",
+    "test2.jpg",
+    "test3.jpg",
+    "test4.jpg",
+    "test5.jpg"
   ],
   "status": "success"
 }
               """.trimIndent(),
-            )
-            .build()
+          )
           else -> fail("Unexpected request: $this")
         }
     }
 
     assertThat(dogs.images(breed = "hound", count = 5)).containsExactly(
-      "https://images.dog.ceo/breeds/hound-afghan/n02088094_1003.jpg",
-      "https://images.dog.ceo/breeds/hound-afghan/n02088094_10263.jpg",
-      "https://images.dog.ceo/breeds/hound-afghan/n02088094_115.jpg",
-      "https://images.dog.ceo/breeds/hound-afghan/n02088094_1150.jpg",
-      "https://images.dog.ceo/breeds/hound-afghan/n02088094_11536.jpg",
+      "test.jpg",
+      "test2.jpg",
+      "test3.jpg",
+      "test4.jpg",
+      "test5.jpg",
     )
   }
 
@@ -168,31 +160,29 @@ class DogsTest {
     server.dispatcher = object : Dispatcher() {
       override fun dispatch(request: RecordedRequest): MockResponse =
         when (request.requestUrl?.encodedPath) {
-          "/breeds/image" -> MockResponse.Builder()
-            .body(
-// language=json
-              """
+          "/breeds/image" -> MockResponse(
+            // language=json
+            body = """
 {
   "message": [
-    "https://images.dog.ceo/breeds/terrier-tibetan/n02097474_4053.jpg",
-    "https://images.dog.ceo/breeds/terrier-tibetan/n02097474_4054.jpg",
-    "https://images.dog.ceo/breeds/terrier-tibetan/n02097474_4055.jpg",
-    "https://images.dog.ceo/breeds/terrier-tibetan/n02097474_4056.jpg"
+    "test.jpg",
+    "test2.jpg",
+    "test3.jpg",
+    "test4.jpg"
   ],
   "status": "success"
 }
               """.trimIndent(),
-            )
-            .build()
+          )
           else -> fail("Unexpected request: $this")
         }
     }
 
     assertThat(dogs.images()).containsExactly(
-      "https://images.dog.ceo/breeds/terrier-tibetan/n02097474_4053.jpg",
-      "https://images.dog.ceo/breeds/terrier-tibetan/n02097474_4054.jpg",
-      "https://images.dog.ceo/breeds/terrier-tibetan/n02097474_4055.jpg",
-      "https://images.dog.ceo/breeds/terrier-tibetan/n02097474_4056.jpg",
+      "test.jpg",
+      "test2.jpg",
+      "test3.jpg",
+      "test4.jpg",
     )
   }
 
@@ -200,33 +190,31 @@ class DogsTest {
     server.dispatcher = object : Dispatcher() {
       override fun dispatch(request: RecordedRequest): MockResponse =
         when (request.requestUrl?.encodedPath) {
-          "/breeds/image/random/5" -> MockResponse.Builder()
-            .body(
-// language=json
-              """
+          "/breeds/image/random/5" -> MockResponse(
+            // language=json
+            body = """
 {
   "message": [
-    "https://images.dog.ceo/breeds/hound-afghan/n02088094_1003.jpg",
-    "https://images.dog.ceo/breeds/hound-afghan/n02088094_10263.jpg",
-    "https://images.dog.ceo/breeds/hound-afghan/n02088094_115.jpg",
-    "https://images.dog.ceo/breeds/hound-afghan/n02088094_1150.jpg",
-    "https://images.dog.ceo/breeds/hound-afghan/n02088094_11536.jpg"
+    "test.jpg",
+    "test2.jpg",
+    "test3.jpg",
+    "test4.jpg",
+    "test5.jpg"
   ],
   "status": "success"
 }
               """.trimIndent(),
-            )
-            .build()
+          )
           else -> fail("Unexpected request: $this")
         }
     }
 
     assertThat(dogs.images(count = 5)).containsExactly(
-      "https://images.dog.ceo/breeds/hound-afghan/n02088094_1003.jpg",
-      "https://images.dog.ceo/breeds/hound-afghan/n02088094_10263.jpg",
-      "https://images.dog.ceo/breeds/hound-afghan/n02088094_115.jpg",
-      "https://images.dog.ceo/breeds/hound-afghan/n02088094_1150.jpg",
-      "https://images.dog.ceo/breeds/hound-afghan/n02088094_11536.jpg",
+      "test.jpg",
+      "test2.jpg",
+      "test3.jpg",
+      "test4.jpg",
+      "test5.jpg",
     )
   }
 }

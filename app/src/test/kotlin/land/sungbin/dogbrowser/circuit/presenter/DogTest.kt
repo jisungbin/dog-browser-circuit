@@ -1,15 +1,16 @@
 package land.sungbin.dogbrowser.circuit.presenter
 
 import assertk.assertThat
+import assertk.assertions.isDataClassEqualTo
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
 
 class DogTest {
   @Test fun dogToJson() {
-    val dog = Dog("Bulldog", "https://example.com/bulldog.jpg")
+    val dog = Dog("Bulldog", "https://example.com/bulldog.jpg", false)
     assertThat(dog.toJson()).isEqualTo(
       """
-{"breed":"Bulldog","image":"https://example.com/bulldog.jpg"}
+{"breed":"Bulldog","image":"https://example.com/bulldog.jpg","favorite":false}
       """.trimIndent(),
     )
   }
@@ -17,9 +18,9 @@ class DogTest {
   @Test fun dogFromJson() {
     val dog = Dog.fromJson(
       """
-{"breed":"Bulldog","image":"https://example.com/bulldog.jpg"}
+{"breed":"Bulldog","image":"https://example.com/bulldog.jpg","favorite":true}
       """.trimIndent(),
     )
-    assertThat(dog).isEqualTo(Dog("Bulldog", "https://example.com/bulldog.jpg"))
+    assertThat(dog).isDataClassEqualTo(Dog("Bulldog", "https://example.com/bulldog.jpg", true))
   }
 }

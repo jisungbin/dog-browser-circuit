@@ -5,6 +5,8 @@
  * Please see full license: https://github.com/jisungbin/dog-browser-circuit/blob/trunk/LICENSE
  */
 
+@file:Suppress("UnstableApiUsage")
+
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 
 plugins {
@@ -32,6 +34,10 @@ android {
 
   sourceSets {
     getByName("main").java.srcDir("src/main/kotlin")
+  }
+
+  testOptions.unitTests {
+    isReturnDefaultValues = true
   }
 }
 
@@ -86,6 +92,7 @@ dependencies {
   implementation(libs.timber)
 
   testImplementation(kotlin("test-junit5"))
+  testImplementation(kotlin("reflect")) // Used in assertk
   testImplementation(libs.test.assertk)
   testImplementation(libs.test.circuit)
   testImplementation(libs.test.turbine)

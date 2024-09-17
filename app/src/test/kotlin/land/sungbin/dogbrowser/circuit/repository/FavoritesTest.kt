@@ -90,9 +90,9 @@ class FavoritesTest {
     }
   }
 
-  private fun dog(breed: String) = Dog(breed = breed, image = "")
+  private fun dog(breed: String) = Dog(breed = breed, image = "", favorite = false)
 
-  private class FavoriteDestinationTempFileFactory : TempDirFactory {
+  class FavoriteDestinationTempFileFactory : TempDirFactory {
     override fun createTempDirectory(
       elementContext: AnnotatedElementContext,
       extensionContext: ExtensionContext,
