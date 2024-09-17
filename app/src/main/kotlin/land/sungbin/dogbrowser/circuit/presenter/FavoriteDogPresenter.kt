@@ -24,7 +24,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
-import land.sungbin.dogbrowser.circuit.overlay.OverlayExceptionHandler
 import land.sungbin.dogbrowser.circuit.repository.Favorites
 import land.sungbin.dogbrowser.circuit.screen.DogViewerScreen
 import land.sungbin.dogbrowser.circuit.screen.FavoriteDogScreen
@@ -36,7 +35,7 @@ public class FavoriteDogPresenter @AssistedInject constructor(
   @Composable override fun present(): FavoriteDogScreen.State {
     val overlay = LocalOverlayHost.current
     val scope = rememberStableCoroutineScope()
-    val exceptionHandler = remember(scope, overlay) { OverlayExceptionHandler(scope, overlay) }
+    val exceptionHandler = remember(scope, overlay) { OverlayExceptionHandlerKey(scope, overlay) }
 
     val dogs: ImmutableList<Dog> by produceRetainedState(persistentListOf()) {
       scope.launch(exceptionHandler) {

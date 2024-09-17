@@ -16,6 +16,7 @@ import okio.Buffer
 @Parcelize public data class Dog(
   public val breed: String?,
   public val image: String,
+  public val favorite: Boolean,
 ) : Parcelable {
   public fun toJson(): String {
     val buffer = Buffer()
@@ -23,6 +24,7 @@ import okio.Buffer
       writer.beginObject()
       writer.name(Dog::breed.name).value(breed)
       writer.name(Dog::image.name).value(image)
+      writer.name(Dog::favorite.name).value(favorite)
       writer.endObject()
     }
     return buffer.readUtf8()
@@ -32,6 +34,7 @@ import okio.Buffer
     public fun fromJson(json: String): Dog {
       var breed: String? = null
       var image: String? = null
+      var favorite: Boolean? = null
 
       JsonReader.of(Buffer().writeUtf8(json)).use { reader ->
         reader.beginObject()
@@ -39,6 +42,7 @@ import okio.Buffer
           when (reader.nextName()) {
             Dog::breed.name -> breed = reader.nextString()
             Dog::image.name -> image = reader.nextString()
+            Dog::favorite.name -> favorite = reader.nextBoolean()
             else -> error("Unexpected key: $this")
           }
         }
@@ -48,6 +52,7 @@ import okio.Buffer
       return Dog(
         breed = breed,
         image = checkNotNull(image) { "${Dog::image.name} value is null" },
+        favorite = checkNotNull(favorite) { "${Dog::favorite.name} value is null" },
       )
     }
   }
