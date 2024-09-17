@@ -2,7 +2,7 @@
  * Developed by Ji Sungbin 2024.
  *
  * Licensed under the MIT.
- * Please see full license: https://github.com/jisungbin/search-app-circuit/blob/trunk/LICENSE
+ * Please see full license: https://github.com/jisungbin/dog-browser-circuit/blob/trunk/LICENSE
  */
 import com.diffplug.gradle.spotless.BaseKotlinExtension
 import com.diffplug.gradle.spotless.SpotlessExtension

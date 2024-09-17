@@ -2,10 +2,10 @@
  * Developed by Ji Sungbin 2024.
  *
  * Licensed under the MIT.
- * Please see full license: https://github.com/jisungbin/search-app-circuit/blob/trunk/LICENSE
+ * Please see full license: https://github.com/jisungbin/dog-browser-circuit/blob/trunk/LICENSE
  */
 
-package land.sungbin.searchapp.circuit.presenter
+package land.sungbin.dogbrowser.circuit.presenter
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,18 +30,18 @@ import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.launch
-import land.sungbin.searchapp.circuit.OverlayExceptionHandler
-import land.sungbin.searchapp.circuit.repository.Dogs
-import land.sungbin.searchapp.circuit.repository.Favorites
-import land.sungbin.searchapp.circuit.screen.DogViewerScreen
-import land.sungbin.searchapp.circuit.screen.SearchDogScreen
+import land.sungbin.dogbrowser.circuit.overlay.OverlayExceptionHandler
+import land.sungbin.dogbrowser.circuit.repository.Dogs
+import land.sungbin.dogbrowser.circuit.repository.Favorites
+import land.sungbin.dogbrowser.circuit.screen.DogViewerScreen
+import land.sungbin.dogbrowser.circuit.screen.BrowseDogScreen
 
-public class SearchDogPresenter @AssistedInject constructor(
+public class BrowseDogPresenter @AssistedInject constructor(
   private val dogs: Dogs,
   private val favorites: Favorites,
   @Assisted private val navigator: Navigator,
-) : Presenter<SearchDogScreen.State> {
-  @Composable override fun present(): SearchDogScreen.State {
+) : Presenter<BrowseDogScreen.State> {
+  @Composable override fun present(): BrowseDogScreen.State {
     val overlay = LocalOverlayHost.current
     val scope = rememberStableCoroutineScope()
     val exceptionHandler = remember(scope, overlay) { OverlayExceptionHandler(scope, overlay) }
@@ -49,34 +49,34 @@ public class SearchDogPresenter @AssistedInject constructor(
     var dogs: ImmutableList<Dog> by rememberRetained { mutableStateOf(persistentListOf()) }
     val breeds: ImmutableSet<String> by produceRetainedState(persistentSetOf()) {
       scope.launch(exceptionHandler) {
-        value = this@SearchDogPresenter.dogs.breeds().toPersistentSet()
+        value = this@BrowseDogPresenter.dogs.breeds().toPersistentSet()
       }
     }
 
-    return SearchDogScreen.State(dogs = dogs, breeds = breeds) { event ->
+    return BrowseDogScreen.State(dogs = dogs, breeds = breeds) { event ->
       when (event) {
-        is SearchDogScreen.Event.Search -> {
+        is BrowseDogScreen.Event.Browse -> {
           scope.launch(exceptionHandler) {
-            val images = this@SearchDogPresenter.dogs.images(breed = event.breed, count = event.count)
+            val images = this@BrowseDogPresenter.dogs.images(breed = event.breed, count = event.count)
             dogs = images.map { image -> Dog(breed = event.breed, image = image) }.toImmutableList()
           }
         }
-        is SearchDogScreen.Event.AddFavorite -> {
+        is BrowseDogScreen.Event.AddFavorite -> {
           scope.launch(exceptionHandler) { favorites += event.dog }
         }
-        is SearchDogScreen.Event.RemoveFavorite -> {
+        is BrowseDogScreen.Event.RemoveFavorite -> {
           scope.launch(exceptionHandler) { favorites -= event.dog }
         }
-        is SearchDogScreen.Event.GoToViewer -> {
+        is BrowseDogScreen.Event.GoToViewer -> {
           navigator.goTo(DogViewerScreen(event.dog))
         }
       }
     }
   }
 
-  @CircuitInject(SearchDogScreen::class, ActivityRetainedComponent::class)
+  @CircuitInject(BrowseDogScreen::class, ActivityRetainedComponent::class)
   @AssistedFactory
   public fun interface Factory {
-    public fun create(navigator: Navigator): SearchDogPresenter
+    public fun create(navigator: Navigator): BrowseDogPresenter
   }
 }

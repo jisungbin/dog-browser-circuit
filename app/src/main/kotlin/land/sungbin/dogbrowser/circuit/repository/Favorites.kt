@@ -2,10 +2,10 @@
  * Developed by Ji Sungbin 2024.
  *
  * Licensed under the MIT.
- * Please see full license: https://github.com/jisungbin/search-app-circuit/blob/trunk/LICENSE
+ * Please see full license: https://github.com/jisungbin/dog-browser-circuit/blob/trunk/LICENSE
  */
 
-package land.sungbin.searchapp.circuit.repository
+package land.sungbin.dogbrowser.circuit.repository
 
 import android.content.Context
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
@@ -23,13 +23,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import land.sungbin.searchapp.circuit.presenter.Dog
+import land.sungbin.dogbrowser.circuit.presenter.Dog
 
 public interface Favorites {
   public suspend operator fun plusAssign(dog: Dog)
   public suspend operator fun minusAssign(dog: Dog)
   public suspend operator fun contains(dog: Dog): Boolean
   public suspend operator fun invoke(): List<Dog>
+
+  // TODO https://github.com/Kotlin/kotlinx.coroutines/issues/3274
   public fun observe(): Flow<List<Dog>>
 }
 

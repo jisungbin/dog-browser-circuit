@@ -2,10 +2,10 @@
  * Developed by Ji Sungbin 2024.
  *
  * Licensed under the MIT.
- * Please see full license: https://github.com/jisungbin/search-app-circuit/blob/trunk/LICENSE
+ * Please see full license: https://github.com/jisungbin/dog-browser-circuit/blob/trunk/LICENSE
  */
 
-package land.sungbin.searchapp.circuit.presenter
+package land.sungbin.dogbrowser.circuit.presenter
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,10 +24,10 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
-import land.sungbin.searchapp.circuit.OverlayExceptionHandler
-import land.sungbin.searchapp.circuit.repository.Favorites
-import land.sungbin.searchapp.circuit.screen.DogViewerScreen
-import land.sungbin.searchapp.circuit.screen.FavoriteDogScreen
+import land.sungbin.dogbrowser.circuit.overlay.OverlayExceptionHandler
+import land.sungbin.dogbrowser.circuit.repository.Favorites
+import land.sungbin.dogbrowser.circuit.screen.DogViewerScreen
+import land.sungbin.dogbrowser.circuit.screen.FavoriteDogScreen
 
 public class FavoriteDogPresenter @AssistedInject constructor(
   private val favorites: Favorites,

@@ -2,11 +2,11 @@
  * Developed by Ji Sungbin 2024.
  *
  * Licensed under the MIT.
- * Please see full license: https://github.com/jisungbin/search-app-circuit/blob/trunk/LICENSE
+ * Please see full license: https://github.com/jisungbin/dog-browser-circuit/blob/trunk/LICENSE
  */
 @file:Suppress("UnstableApiUsage")
 
-rootProject.name = "search-app-circuit"
+rootProject.name = "dog-browser-circuit"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")

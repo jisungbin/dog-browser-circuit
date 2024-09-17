@@ -2,17 +2,16 @@
  * Developed by Ji Sungbin 2024.
  *
  * Licensed under the MIT.
- * Please see full license: https://github.com/jisungbin/search-app-circuit/blob/trunk/LICENSE
+ * Please see full license: https://github.com/jisungbin/dog-browser-circuit/blob/trunk/LICENSE
  */
 
-package land.sungbin.searchapp.circuit
+package land.sungbin.dogbrowser.circuit.overlay
 
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.runtime.internal.StableCoroutineScope
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
-import land.sungbin.searchapp.circuit.overlay.ExceptionOverlay
 
 public class OverlayExceptionHandler(
   private val scope: StableCoroutineScope,

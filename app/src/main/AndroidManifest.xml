@@ -2,13 +2,14 @@
   ~ Developed by Ji Sungbin 2024.
   ~
   ~ Licensed under the MIT.
-  ~ Please see full license: https://github.com/jisungbin/search-app-circuit/blob/trunk/LICENSE
+  ~ Please see full license: https://github.com/jisungbin/dog-browser-circuit/blob/trunk/LICENSE
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
   <application
-    android:name="land.sungbin.searchapp.circuit.App"
+    android:name="land.sungbin.dogbrowser.circuit.App"
     android:icon="@mipmap/ic_launcher"
+    android:label="Dog Browser"
     android:theme="@android:style/Theme.Material.Light.NoActionBar">
 
     <activity
