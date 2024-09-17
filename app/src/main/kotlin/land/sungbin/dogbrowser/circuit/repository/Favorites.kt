@@ -88,7 +88,7 @@ import okio.Path.Companion.toOkioPath
   public fun observe(): Flow<List<Dog>> =
     dataStore.data
       .mapNotNull { preferences -> preferences[KEY_FAVORITES] }
-      .map { favorites -> favorites.map(Dog::fromJson) }
+      .map { favorites -> favorites.map { json -> Dog.fromJson(json).copy(favorite = true) } }
 
   public companion object Key {
     private val KEY_FAVORITES = stringSetPreferencesKey("favorites")

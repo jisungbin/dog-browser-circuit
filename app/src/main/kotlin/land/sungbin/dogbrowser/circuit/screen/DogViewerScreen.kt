@@ -12,7 +12,7 @@ import com.slack.circuit.runtime.screen.Screen
 import kotlinx.parcelize.Parcelize
 import land.sungbin.dogbrowser.circuit.presenter.Dog
 
-@Parcelize public class DogViewerScreen(public val dog: Dog) : Screen {
+@Parcelize public data class DogViewerScreen(public val dog: Dog) : Screen {
   @JvmInline public value class State(public val eventSink: (Event) -> Unit = {}) : CircuitUiState
 
   public sealed interface Event : CircuitUiState {
