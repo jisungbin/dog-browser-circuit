@@ -25,9 +25,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.components.ActivityRetainedComponent
-import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
 import land.sungbin.dogbrowser.circuit.repository.Dogs
 import land.sungbin.dogbrowser.circuit.repository.Favorites
@@ -43,9 +43,9 @@ public class BrowseDogPresenter @AssistedInject constructor(
   @Composable override fun present(): BrowseDogScreen.State {
     val scope = rememberCoroutineScope()
 
-    val breedsResult by produceRetainedState(Result.success(persistentSetOf())) {
+    val breedsResult by produceRetainedState(Result.success(persistentListOf())) {
       scope.launch {
-        value = runSuspendCatching { this@BrowseDogPresenter.dogs.breeds() }.map(List<String>::toPersistentSet)
+        value = runSuspendCatching { this@BrowseDogPresenter.dogs.breeds() }.map(List<String>::toPersistentList)
       }
     }
 

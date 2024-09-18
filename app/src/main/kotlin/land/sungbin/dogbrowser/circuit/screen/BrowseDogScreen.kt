@@ -11,14 +11,13 @@ import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.parcelize.Parcelize
 import land.sungbin.dogbrowser.circuit.presenter.Dog
 
 @Parcelize public data object BrowseDogScreen : Screen {
   public data class State(
     public val dogs: Result<ImmutableList<Dog>>,
-    public val breeds: Result<ImmutableSet<String>>,
+    public val breeds: Result<ImmutableList<String>>,
     public val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 

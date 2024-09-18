@@ -5,9 +5,8 @@
  * Please see full license: https://github.com/jisungbin/dog-browser-circuit/blob/trunk/LICENSE
  */
 
-package land.sungbin.dogbrowser.circuit
+package land.sungbin.dogbrowser.circuit.activity
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,10 +15,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalContext
@@ -47,12 +44,7 @@ public class MainActivity : ComponentActivity() {
 }
 
 @[Composable ReadOnlyComposable]
-private fun dynamicThemeScheme(darkTheme: Boolean = isSystemInDarkTheme()): ColorScheme =
-  when {
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-      val context = LocalContext.current
-      if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-    }
-    darkTheme -> darkColorScheme()
-    else -> lightColorScheme()
-  }
+private fun dynamicThemeScheme(darkTheme: Boolean = isSystemInDarkTheme()): ColorScheme {
+  val context = LocalContext.current
+  return if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+}

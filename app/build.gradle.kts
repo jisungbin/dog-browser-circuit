@@ -16,6 +16,7 @@ plugins {
   kotlin("android")
   kotlin("plugin.compose")
   id("kotlin-parcelize")
+  alias(libs.plugins.paparazzi)
 }
 
 android {
@@ -23,7 +24,7 @@ android {
   compileSdk = 35
 
   defaultConfig {
-    minSdk = 23
+    minSdk = 33
     targetSdk = 35
   }
 
@@ -64,13 +65,16 @@ dependencies {
   implementation(libs.androidx.annotation)
   implementation(libs.androidx.activity)
   implementation(libs.androidx.datastore)
+  implementation(libs.androidx.palette)
 
   implementation(libs.android.hilt.runtime)
   ksp(libs.android.hilt.ksp)
 
   implementation(libs.compose.foundation)
   implementation(libs.compose.material3)
+  implementation(libs.compose.coil)
   implementation(libs.compose.telephoto)
+  implementation(libs.compose.haze)
   implementation(libs.compose.activity)
 
   implementation(libs.kotlin.coroutines)
