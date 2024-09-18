@@ -86,6 +86,7 @@ dependencies {
   implementation(libs.circuit.codegen.annotation)
   ksp(libs.circuit.codegen.ksp)
 
+  implementation(libs.circuitx.android)
   implementation(libs.circuitx.overlay)
 
   implementation(libs.timber)
