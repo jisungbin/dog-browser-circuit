@@ -23,7 +23,6 @@ import land.sungbin.dogbrowser.circuit.repository.Favorites
 import land.sungbin.dogbrowser.circuit.repository.FavoritesTest.FavoriteDestinationTempFileFactory
 import land.sungbin.dogbrowser.circuit.screen.BrowseDogScreen
 import land.sungbin.dogbrowser.circuit.screen.DogViewerScreen
-import land.sungbin.dogbrowser.circuit.screen.FavoriteDogScreen
 import okio.Path.Companion.toOkioPath
 import okio.fakefilesystem.FakeFileSystem
 import org.junit.jupiter.api.Test
@@ -60,7 +59,7 @@ class FavoriteDogPresenterTest {
     favorites += dog("test2.jpg")
     presenter.test {
       skipItems(1) // load favorites
-      awaitItem().eventSink(FavoriteDogScreen.Event.RemoveFavorite(dog("test.jpg")))
+      awaitItem().eventSink(BrowseDogScreen.Event.RemoveFavorite(dog("test.jpg")))
 
       assertThat(awaitItem().dogs).containsExactly(dog("test2.jpg").copy(favorite = true))
 
@@ -72,7 +71,7 @@ class FavoriteDogPresenterTest {
     favorites += dog("test.jpg")
     presenter.test {
       skipItems(1) // load favorites
-      awaitItem().eventSink(FavoriteDogScreen.Event.GoToViewer(dog("test.jpg")))
+      awaitItem().eventSink(BrowseDogScreen.Event.GoToViewer(dog("test.jpg")))
 
       assertThat(navigator.awaitNextScreen()).isEqualTo(DogViewerScreen(dog("test.jpg")))
 

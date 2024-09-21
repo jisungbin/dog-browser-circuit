@@ -7,6 +7,7 @@
 
 package land.sungbin.dogbrowser.circuit.ui
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.MarqueeDefaults
 import androidx.compose.foundation.background
@@ -15,10 +16,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -26,9 +27,9 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,8 +42,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorProducer
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -61,12 +62,11 @@ import land.sungbin.dogbrowser.circuit.R
 import land.sungbin.dogbrowser.circuit.presenter.Dog
 import land.sungbin.dogbrowser.circuit.screen.BrowseDogScreen
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable public fun LazyDogGrid(
   dogs: ImmutableList<Dog>,
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues = PaddingValues(0.dp),
-  eventSink: (event: BrowseDogScreen.Event) -> Unit,
+  eventSink: (event: BrowseDogScreen.Event.RestrictedFavorites) -> Unit,
 ) {
   val context = LocalContext.current
 
@@ -87,19 +87,23 @@ import land.sungbin.dogbrowser.circuit.screen.BrowseDogScreen
     }
   }
 
-  LazyVerticalStaggeredGrid(
-    modifier = modifier,
-    columns = StaggeredGridCells.Adaptive(160.dp),
-    contentPadding = contentPadding,
-    verticalItemSpacing = 2.dp,
-    horizontalArrangement = Arrangement.spacedBy(2.dp),
-  ) {
-    items(items = dogs, key = Dog::image) { dog ->
-      DogImage(
-        modifier = modifier.wrapContentSize(),
-        dog = dog,
-        eventSink = eventSink,
-      )
+  if (dogs.isEmpty()) {
+    DogsEmpty(modifier = modifier.wrapContentSize())
+  } else {
+    LazyVerticalStaggeredGrid(
+      modifier = modifier,
+      columns = StaggeredGridCells.Adaptive(minSize = 250.dp),
+      contentPadding = contentPadding,
+      verticalItemSpacing = 4.dp,
+      horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+      items(items = dogs, key = Dog::image) { dog ->
+        DogImage(
+          modifier = modifier.fillMaxWidth(),
+          dog = dog,
+          eventSink = eventSink,
+        )
+      }
     }
   }
 }
@@ -109,14 +113,12 @@ private val dogImageShape = RoundedCornerShape(size = 2.dp)
 @Composable private fun DogImage(
   dog: Dog,
   modifier: Modifier = Modifier,
-  eventSink: (event: BrowseDogScreen.Event) -> Unit,
+  eventSink: (event: BrowseDogScreen.Event.RestrictedFavorites) -> Unit,
 ) {
   val scope = rememberCoroutineScope()
-  val tertiaryColor = MaterialTheme.colorScheme.tertiary
   val isSystemInDarkTheme = isSystemInDarkTheme()
 
   var dogSwatch by rememberRetained { mutableStateOf<Palette.Swatch?>(null) }
-  val dogFavoriteTint = rememberRetained { ColorProducer { dogSwatch?.rgb?.let(::Color) ?: tertiaryColor } }
 
   Box(
     modifier = modifier
@@ -124,22 +126,29 @@ private val dogImageShape = RoundedCornerShape(size = 2.dp)
       .clickable { eventSink(BrowseDogScreen.Event.GoToViewer(dog)) },
   ) {
     AsyncImage(
-      modifier = Modifier.matchParentSize(),
+      modifier = Modifier.fillMaxWidth(),
       model = dog.image,
       filterQuality = FilterQuality.High,
       onSuccess = { (_, result) ->
         scope.launch(Dispatchers.IO) {
-          Palette.from(result.drawable.toBitmap()).generate { palette ->
+          Palette.from(
+            result.drawable
+              .toBitmap()
+              .copy(Bitmap.Config.ARGB_8888, /* isMutable = */ false),
+          ).generate { palette ->
             palette
-              ?.let { if (isSystemInDarkTheme) palette.darkVibrantSwatch else palette.lightVibrantSwatch }
+              ?.let { (if (isSystemInDarkTheme) palette.darkVibrantSwatch else palette.lightVibrantSwatch) ?: palette.dominantSwatch }
               ?.let { swatch -> dogSwatch = swatch }
           }
         }
       },
+      contentScale = ContentScale.Crop,
       contentDescription = dog.breed,
+      imageLoader = LocalContext.current.imageLoader,
     )
     Row(
       modifier = Modifier
+        .padding(all = 4.dp)
         .align(Alignment.BottomStart)
         .matchParentSize()
         .wrapContentHeight(align = Alignment.Bottom),
@@ -159,13 +168,17 @@ private val dogImageShape = RoundedCornerShape(size = 2.dp)
             ),
           text = dog.breed,
           maxLines = 1,
-          style = LocalTextStyle.current.copy(
+          style = MaterialTheme.typography.bodyMedium.copy(
             color = dogSwatch?.titleTextColor?.let(::Color) ?: MaterialTheme.colorScheme.onPrimaryContainer,
           ),
         )
       }
       Spacer(Modifier.weight(1f))
-      IconButton(
+      FilledTonalIconButton(
+        colors = IconButtonDefaults.filledTonalIconButtonColors(
+          containerColor = dogSwatch?.rgb?.let(::Color) ?: MaterialTheme.colorScheme.tertiaryContainer,
+          contentColor = dogSwatch?.bodyTextColor?.let(::Color) ?: MaterialTheme.colorScheme.tertiary,
+        ),
         onClick = {
           val event = when (dog.favorite) {
             true -> BrowseDogScreen.Event.RemoveFavorite(dog)
@@ -181,10 +194,17 @@ private val dogImageShape = RoundedCornerShape(size = 2.dp)
               else -> R.drawable.ic_round_favorite_border_24
             },
           ),
-          tint = dogFavoriteTint,
           contentDescription = if (dog.favorite) "favorite" else "not favorite",
         )
       }
     }
   }
+}
+
+@Composable private fun DogsEmpty(modifier: Modifier = Modifier) {
+  Text(
+    modifier = modifier,
+    text = "No dogs found.",
+    style = MaterialTheme.typography.headlineLarge,
+  )
 }

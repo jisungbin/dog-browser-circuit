@@ -37,6 +37,7 @@ public class App : Application(), ImageLoaderFactory {
           .build()
       }
       .placeholder(R.drawable.ic_round_photo_24)
+      .error(R.drawable.ic_round_broken_image_24)
       .logger(DebugLogger())
       .build()
 }

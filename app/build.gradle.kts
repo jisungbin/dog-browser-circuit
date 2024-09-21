@@ -48,10 +48,13 @@ ksp {
 kotlin {
   explicitApi()
   compilerOptions {
-    optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
+    optIn.addAll(
+      "kotlinx.coroutines.FlowPreview",
+      "androidx.compose.foundation.layout.ExperimentalLayoutApi",
+      "androidx.compose.material3.ExperimentalMaterial3Api",
+    )
   }
   sourceSets.all {
-    languageSettings.enableLanguageFeature("ContextReceivers")
     languageSettings.enableLanguageFeature("ExplicitBackingFields")
   }
 }
@@ -73,7 +76,6 @@ dependencies {
   implementation(libs.compose.material3)
   implementation(libs.compose.coil)
   implementation(libs.compose.telephoto)
-  implementation(libs.compose.haze)
   implementation(libs.compose.activity)
 
   implementation(libs.kotlin.coroutines)

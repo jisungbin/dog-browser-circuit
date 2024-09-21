@@ -57,7 +57,6 @@ compose-foundation = { module = "androidx.compose.foundation:foundation", versio
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
 compose-coil = { module = "io.coil-kt:coil-compose", version.ref = "compose-coil" }
 compose-telephoto = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "compose-telephoto" }
-compose-haze = { module = "dev.chrisbanes.haze:haze", version.ref = "compose-haze" }
 compose-activity = { module = "androidx.activity:activity-compose", version.ref = "compose-activity" }
 
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }

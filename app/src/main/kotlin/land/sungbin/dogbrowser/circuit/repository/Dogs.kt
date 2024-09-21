@@ -7,38 +7,53 @@
 
 package land.sungbin.dogbrowser.circuit.repository
 
+import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.squareup.moshi.JsonReader
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.Cache
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.coroutines.executeAsync
 import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.logging.LoggingEventListener
 import okio.BufferedSource
 import timber.log.Timber
 
 @Singleton public class Dogs @VisibleForTesting constructor(
   base: String,
   private val dispatcher: CoroutineDispatcher,
+  private val cache: Cache? = null,
 ) {
-  @Inject public constructor() : this(
+  @Inject public constructor(@ApplicationContext context: Context) : this(
     base = "https://dog.ceo/api",
     dispatcher = Dispatchers.IO,
+    cache = Cache(
+      directory = context.cacheDir.resolve(CACHE_DIRECTORY),
+      maxSize = CACHE_SIZE,
+    ),
   )
 
   private val base = base.toHttpUrl()
-  private val client = OkHttpClient.Builder()
-    .addInterceptor(
-      HttpLoggingInterceptor { message -> Timber.tag(TAG).d(message) }
-        .setLevel(HttpLoggingInterceptor.Level.BASIC),
-    )
-    .build()
+  private val client by lazy {
+    OkHttpClient.Builder()
+      .cache(cache)
+      .addInterceptor(
+        HttpLoggingInterceptor { message -> Timber.tag(TAG).d(message) }
+          .setLevel(HttpLoggingInterceptor.Level.BASIC),
+      )
+      .eventListenerFactory(
+        LoggingEventListener.Factory { message -> Timber.tag(TAG).d(message) },
+      )
+      .build()
+  }
 
   /** @return Dog's breed names */
   @Throws(IOException::class, IllegalStateException::class)
@@ -61,7 +76,7 @@ import timber.log.Timber
       val url = base.newBuilder()
         .addPathSegments(if (breed == null) "breeds" else "breed/$breed")
         .addPathSegment(if (breed == null) "image" else "images")
-        .apply { if (count != null) addPathSegments("random/$count") }
+        .addPathSegments("random/${count?.coerceAtMost(50) ?: 50}")
         .build()
       client.newCall(Request.Builder().url(url).build()).executeAsync()
     }
@@ -128,5 +143,8 @@ import timber.log.Timber
 
   public companion object {
     private const val TAG = "DOG-REPOSITORY"
+
+    private const val CACHE_DIRECTORY = "dogs"
+    private const val CACHE_SIZE = 100L * 1024L * 1024L // 100 MB
   }
 }

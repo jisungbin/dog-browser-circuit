@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.util.fastAny
+import androidx.compose.ui.util.fastDistinctBy
 import androidx.compose.ui.util.fastMap
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.collectAsRetainedState
@@ -55,9 +56,9 @@ public class BrowseDogPresenter @AssistedInject constructor(
     val dogs by rememberRetained(browseDogsResult) {
       derivedStateOf {
         browseDogsResult.map { browseDogs ->
-          browseDogs.fastMap { dog ->
-            dog.copy(favorite = favoriteDogs.fastAny { favorite -> favorite.image == dog.image })
-          }
+          browseDogs
+            .fastDistinctBy(Dog::image)
+            .fastMap { dog -> dog.copy(favorite = favoriteDogs.fastAny { favorite -> favorite.image == dog.image }) }
             .toImmutableList()
         }
       }

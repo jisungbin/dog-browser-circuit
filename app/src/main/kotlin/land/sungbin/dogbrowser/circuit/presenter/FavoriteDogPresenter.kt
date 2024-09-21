@@ -23,6 +23,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
 import land.sungbin.dogbrowser.circuit.repository.Favorites
+import land.sungbin.dogbrowser.circuit.screen.BrowseDogScreen
 import land.sungbin.dogbrowser.circuit.screen.DogViewerScreen
 import land.sungbin.dogbrowser.circuit.screen.FavoriteDogScreen
 
@@ -43,10 +44,13 @@ public class FavoriteDogPresenter @AssistedInject constructor(
 
     return FavoriteDogScreen.State(dogs = dogs) { event ->
       when (event) {
-        is FavoriteDogScreen.Event.RemoveFavorite -> {
+        is BrowseDogScreen.Event.AddFavorite -> {
+          scope.launch { favorites += event.dog }
+        }
+        is BrowseDogScreen.Event.RemoveFavorite -> {
           scope.launch { favorites -= event.dog }
         }
-        is FavoriteDogScreen.Event.GoToViewer -> {
+        is BrowseDogScreen.Event.GoToViewer -> {
           navigator.goTo(DogViewerScreen(event.dog))
         }
       }

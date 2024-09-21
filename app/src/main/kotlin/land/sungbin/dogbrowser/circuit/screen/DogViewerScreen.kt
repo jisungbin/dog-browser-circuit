@@ -18,14 +18,16 @@ import land.sungbin.dogbrowser.circuit.presenter.Dog
 
 @Parcelize @JvmInline
 public value class DogViewerScreen(public val dog: Dog) : AndroidScreen {
-  public fun buildAndroidStarter(@UiContext context: Context): AndroidScreenStarter =
-    AndroidScreenStarter { screen ->
-      if (screen is DogViewerScreen) {
-        val intent = Intent(context, DogViewerActivity::class.java)
-        context.startActivity(intent.putExtra(DogViewerActivity.EXTRA_DOG, screen.dog))
-        true
-      } else {
-        false
+  public companion object {
+    public fun buildAndroidStarter(@UiContext context: Context): AndroidScreenStarter =
+      AndroidScreenStarter { screen ->
+        if (screen is DogViewerScreen) {
+          val intent = Intent(context, DogViewerActivity::class.java)
+          context.startActivity(intent.putExtra(DogViewerActivity.EXTRA_DOG, screen.dog))
+          true
+        } else {
+          false
+        }
       }
-    }
+  }
 }
