@@ -17,13 +17,6 @@ plugins {
   kotlin("jvm") version libs.versions.kotlin.core apply false
   kotlin("plugin.compose") version libs.versions.kotlin.core apply false
   alias(libs.plugins.spotless)
-  idea
-}
-
-idea {
-  module {
-    excludeDirs = excludeDirs + allprojects.map { it.file(".kotlin") }
-  }
 }
 
 allprojects {
@@ -70,7 +63,7 @@ allprojects {
     }
     format("xml") {
       target("**/*.xml")
-      targetExclude("**/build/**/*.xml", "spotless/*.xml", "**/drawable/*.xml")
+      targetExclude("**/build/**/*.xml", "spotless/*.xml", "**/drawable/*.xml", ".idea/**/*.xml")
       // Look for the first XML tag that isn't a comment (<!--) or the xml declaration (<?xml)
       licenseHeaderFile(rootProject.file("spotless/copyright.xml"), "(<[^!?])")
     }

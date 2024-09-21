@@ -50,8 +50,8 @@ import okio.Path.Companion.toOkioPath
     delegate = PreferenceDataStoreFactory.create(
       storage = OkioStorage(fs, PreferencesSerializer) {
         require(destination.name.endsWith(DATA_EXTENSION)) {
-          "File extension for file: ${destination.name} does not match required extension for" +
-            " Preferences file: $DATA_EXTENSION"
+          "File extension for file(${destination.name}) does not match required extension for " +
+            "Preferences file($DATA_EXTENSION)"
         }
         destination
       },
