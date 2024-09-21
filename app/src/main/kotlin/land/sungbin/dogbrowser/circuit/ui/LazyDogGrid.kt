@@ -8,10 +8,7 @@
 package land.sungbin.dogbrowser.circuit.ui
 
 import android.graphics.Bitmap
-import androidx.compose.foundation.MarqueeAnimationMode
-import androidx.compose.foundation.MarqueeDefaults
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +18,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -46,6 +44,7 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.core.graphics.drawable.toBitmap
@@ -108,7 +107,7 @@ import land.sungbin.dogbrowser.circuit.screen.BrowseDogScreen
   }
 }
 
-private val dogImageShape = RoundedCornerShape(size = 2.dp)
+private val dogImageShape = RoundedCornerShape(size = 8.dp)
 
 @Composable private fun DogImage(
   dog: Dog,
@@ -125,10 +124,10 @@ private val dogImageShape = RoundedCornerShape(size = 2.dp)
       .clip(dogImageShape)
       .clickable { eventSink(BrowseDogScreen.Event.GoToViewer(dog)) },
   ) {
+    // TODO Modifier.heightIn(max = 650.dp)
     AsyncImage(
       modifier = Modifier.fillMaxWidth(),
       model = dog.image,
-      filterQuality = FilterQuality.High,
       onSuccess = { (_, result) ->
         scope.launch(Dispatchers.IO) {
           Palette.from(
@@ -144,7 +143,7 @@ private val dogImageShape = RoundedCornerShape(size = 2.dp)
       },
       contentScale = ContentScale.Crop,
       contentDescription = dog.breed,
-      imageLoader = LocalContext.current.imageLoader,
+      filterQuality = FilterQuality.High,
     )
     Row(
       modifier = Modifier
@@ -157,20 +156,19 @@ private val dogImageShape = RoundedCornerShape(size = 2.dp)
       if (dog.breed != null) {
         Text(
           modifier = Modifier
+            .padding(start = 4.dp)
+            .widthIn(max = 150.dp)
             .background(
               color = dogSwatch?.rgb?.let(::Color) ?: MaterialTheme.colorScheme.primaryContainer,
               shape = dogImageShape,
             )
-            .padding(all = 2.dp)
-            .basicMarquee(
-              animationMode = MarqueeAnimationMode.WhileFocused,
-              initialDelayMillis = MarqueeDefaults.RepeatDelayMillis,
-            ),
+            .padding(vertical = 2.dp, horizontal = 6.dp),
           text = dog.breed,
           maxLines = 1,
           style = MaterialTheme.typography.bodyMedium.copy(
-            color = dogSwatch?.titleTextColor?.let(::Color) ?: MaterialTheme.colorScheme.onPrimaryContainer,
+            color = dogSwatch?.bodyTextColor?.let(::Color) ?: MaterialTheme.colorScheme.onPrimaryContainer,
           ),
+          overflow = TextOverflow.Ellipsis,
         )
       }
       Spacer(Modifier.weight(1f))

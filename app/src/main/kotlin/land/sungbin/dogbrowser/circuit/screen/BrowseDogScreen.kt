@@ -14,17 +14,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,14 +29,13 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import dagger.hilt.android.components.ActivityRetainedComponent
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import land.sungbin.dogbrowser.circuit.overlay.BreedFilterBottomSheetOverlay
 import land.sungbin.dogbrowser.circuit.presenter.Dog
+import land.sungbin.dogbrowser.circuit.ui.LazyBreedChip
 import land.sungbin.dogbrowser.circuit.ui.LazyDogGrid
 import land.sungbin.dogbrowser.circuit.ui.LocalSnackbarHost
 
@@ -58,7 +52,7 @@ import land.sungbin.dogbrowser.circuit.ui.LocalSnackbarHost
     public sealed interface RestrictedFavorites : Event
 
     public data class Browse(
-      public val breed: String? = null,
+      public val breeds: List<String> = emptyList(),
       public val count: Int? = null,
     ) : Event
 
@@ -80,7 +74,7 @@ import land.sungbin.dogbrowser.circuit.ui.LocalSnackbarHost
 
   val dogs = state.dogs.getOrDefault(persistentListOf())
   val availableBreeds = state.breeds.getOrDefault(persistentListOf())
-  val selectedBreed = rememberRetained { mutableStateOf<String?>(null) }
+  val selectedBreeds = rememberRetained { mutableStateListOf<String>() }
 
   LaunchedEffect(state) {
     if (state.dogs.isFailure) {
@@ -92,15 +86,6 @@ import land.sungbin.dogbrowser.circuit.ui.LocalSnackbarHost
       val message = state.breeds.exceptionOrNull()?.message ?: "Unknown error"
       snackbarHost.showSnackbar("Failed to load breeds: $message", withDismissAction = true)
     }
-  }
-
-  val updatedState by rememberUpdatedState(state)
-  LaunchedEffect(Unit) {
-    snapshotFlow { selectedBreed.value }
-      .debounce(0.5.seconds)
-      .collect { breed ->
-        updatedState.eventSink(BrowseDogScreen.Event.Browse(breed = breed))
-      }
   }
 
   Column(
@@ -117,44 +102,31 @@ import land.sungbin.dogbrowser.circuit.ui.LocalSnackbarHost
       TextButton(
         onClick = {
           scope.launch {
-            overlays.show(
-              BreedFilterBottomSheetOverlay(availableBreeds, selectedBreed) { breed ->
-                if (selectedBreed.value == breed) selectedBreed.value = null
-                else selectedBreed.value = breed
-              },
-            )
+            overlays.show(BreedFilterBottomSheetOverlay(availableBreeds, selectedBreeds))
+            state.eventSink(BrowseDogScreen.Event.Browse(breeds = selectedBreeds))
           }
         },
       ) {
-        Text("Breed filter")
+        Text("Breeds filter")
       }
-      selectedBreed.value?.let { breed ->
-        BreedChip(
-          modifier = Modifier.fillMaxWidth(),
-          breed = breed,
-          onClick = { selectedBreed.value = null },
-        )
-      }
+      LazyBreedChip(
+        modifier = Modifier.fillMaxWidth(),
+        breeds = selectedBreeds,
+        contentPadding = PaddingValues(start = 8.dp, end = 16.dp),
+        onBreedClick = { breed ->
+          if (breed in selectedBreeds) {
+            selectedBreeds -= breed
+          } else {
+            selectedBreeds += breed
+          }
+        },
+      )
     }
     LazyDogGrid(
       modifier = Modifier.fillMaxSize(),
       dogs = dogs,
-      contentPadding = PaddingValues(horizontal = 16.dp),
+      contentPadding = PaddingValues(start = 16.dp, bottom = 16.dp, end = 16.dp),
       eventSink = state.eventSink,
     )
   }
-}
-
-@[Composable NonRestartableComposable]
-private fun BreedChip(
-  breed: String,
-  modifier: Modifier = Modifier,
-  onClick: () -> Unit,
-) {
-  FilterChip(
-    modifier = modifier,
-    selected = true,
-    onClick = onClick,
-    label = { Text(breed) },
-  )
 }

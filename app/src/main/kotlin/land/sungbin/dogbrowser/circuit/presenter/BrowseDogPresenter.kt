@@ -8,6 +8,7 @@
 package land.sungbin.dogbrowser.circuit.presenter
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +16,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastDistinctBy
+import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.collectAsRetainedState
@@ -29,6 +32,9 @@ import dagger.hilt.android.components.ActivityRetainedComponent
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import land.sungbin.dogbrowser.circuit.repository.Dogs
 import land.sungbin.dogbrowser.circuit.repository.Favorites
@@ -64,15 +70,37 @@ public class BrowseDogPresenter @AssistedInject constructor(
       }
     }
 
-    return BrowseDogScreen.State(dogs = dogs, breeds = breedsResult) { event ->
+    suspend fun requestDogs(breeds: List<String>, count: Int?): Result<List<Dog>> = coroutineScope {
+      val results = (breeds.ifEmpty { listOf(null) }).fastMap { breed ->
+        async {
+          runSuspendCatching {
+            breed to this@BrowseDogPresenter.dogs.images(breed = breed, count = count)
+          }
+        }
+      }
+        .awaitAll()
+      val exception = results.firstNotNullOfOrNull(Result<*>::exceptionOrNull)
+
+      val dogs = results.fastFilter(Result<*>::isSuccess).fastFlatMap { result ->
+        val (breed, images) = result.getOrNull()!!
+        images.fastMap { image ->
+          Dog(breed = breed, image = image, favorite = false)
+        }
+      }
+
+      if (dogs.isEmpty()) Result.failure(exception ?: Exception("No dogs found"))
+      else Result.success(dogs)
+    }
+
+    LaunchedEffect(Unit) {
+      browseDogsResult = requestDogs(breeds = emptyList(), count = null)
+    }
+
+    return BrowseDogScreen.State(dogs = dogs, breeds = breedsResult)
+    { event ->
       when (event) {
         is BrowseDogScreen.Event.Browse -> {
-          scope.launch {
-            val result = runSuspendCatching { this@BrowseDogPresenter.dogs.images(breed = event.breed, count = event.count) }
-            browseDogsResult = result.map { images ->
-              images.fastMap { image -> Dog(breed = event.breed, image = image, favorite = false) }
-            }
-          }
+          scope.launch { browseDogsResult = requestDogs(event.breeds, event.count) }
         }
         is BrowseDogScreen.Event.AddFavorite -> {
           scope.launch { favorites += event.dog }

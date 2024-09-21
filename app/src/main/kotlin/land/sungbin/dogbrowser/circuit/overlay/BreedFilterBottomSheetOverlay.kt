@@ -9,6 +9,7 @@ package land.sungbin.dogbrowser.circuit.overlay
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowColumn
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -17,7 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -27,11 +28,11 @@ import com.slack.circuitx.overlays.BottomSheetOverlay
 @Suppress("FunctionName")
 public fun BreedFilterBottomSheetOverlay(
   availableBreeds: List<String>,
-  selectedBreed: State<String?>,
-  onClick: (breed: String) -> Unit,
+  selectedBreeds: SnapshotStateList<String>,
 ): Overlay<Unit> =
   BottomSheetOverlay(
     model = availableBreeds,
+    skipPartiallyExpandedState = true,
     onDismiss = {},
     content = { availableBreeds, _ ->
       if (availableBreeds.isEmpty()) {
@@ -41,18 +42,23 @@ public fun BreedFilterBottomSheetOverlay(
             .wrapContentSize(),
         )
       } else {
-        FlowColumn(
+        FlowRow(
           modifier = Modifier
-            .fillMaxSize(fraction = 0.65f)
+            .fillMaxSize(fraction = 0.6f)
             .padding(all = 15.dp),
-          verticalArrangement = Arrangement.spacedBy(4.dp),
-          horizontalArrangement = Arrangement.spacedBy(4.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
           availableBreeds.fastForEach { breed ->
             BreedFilterChip(
               breed = breed,
-              selected = breed == selectedBreed.value,
-              onClick = { onClick(breed) },
+              selected = breed in selectedBreeds,
+              onClick = {
+                if (breed in selectedBreeds)
+                  selectedBreeds -= breed
+                else
+                  selectedBreeds += breed
+              },
             )
           }
         }

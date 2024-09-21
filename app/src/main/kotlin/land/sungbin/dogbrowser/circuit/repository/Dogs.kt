@@ -74,7 +74,7 @@ import timber.log.Timber
   ): List<String> {
     val result = withContext(dispatcher) {
       val url = base.newBuilder()
-        .addPathSegments(if (breed == null) "breeds" else "breed/$breed")
+        .addPathSegments(if (breed == null) "breeds" else "breed/${breed.replace('-', '/')}")
         .addPathSegment(if (breed == null) "image" else "images")
         .addPathSegments("random/${count?.coerceAtMost(50) ?: 50}")
         .build()

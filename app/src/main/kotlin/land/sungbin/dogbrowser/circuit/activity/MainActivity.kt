@@ -45,6 +45,9 @@ import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.popUntil
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -89,6 +92,14 @@ public class MainActivity : ComponentActivity() {
                 )
               },
               bottomBar = {
+                fun Navigator.popUntilOrGoTo(screen: Screen) {
+                  if (screen in peekBackStack()) {
+                    popUntil { it == screen }
+                  } else {
+                    goTo(screen)
+                  }
+                }
+
                 NavigationBar(modifier = Modifier.fillMaxWidth()) {
                   NavigationBarItem(
                     modifier = Modifier.weight(1f),
@@ -100,7 +111,7 @@ public class MainActivity : ComponentActivity() {
                       )
                     },
                     label = { Text("Browse") },
-                    onClick = { navigator.resetRoot(BrowseDogScreen) },
+                    onClick = { navigator.popUntilOrGoTo(BrowseDogScreen) },
                   )
                   NavigationBarItem(
                     modifier = Modifier.weight(1f),
@@ -112,7 +123,7 @@ public class MainActivity : ComponentActivity() {
                       )
                     },
                     label = { Text("Favorites") },
-                    onClick = { navigator.resetRoot(FavoriteDogScreen) },
+                    onClick = { navigator.popUntilOrGoTo(FavoriteDogScreen) },
                   )
                 }
               },
