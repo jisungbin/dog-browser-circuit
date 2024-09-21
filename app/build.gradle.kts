@@ -16,7 +16,6 @@ plugins {
   kotlin("android")
   kotlin("plugin.compose")
   id("kotlin-parcelize")
-  alias(libs.plugins.paparazzi)
 }
 
 android {
