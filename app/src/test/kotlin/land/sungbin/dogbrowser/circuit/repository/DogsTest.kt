@@ -105,7 +105,7 @@ class DogsTest {
     server.dispatcher = object : Dispatcher() {
       override fun dispatch(request: RecordedRequest): MockResponse =
         when (request.requestUrl?.encodedPath) {
-          "/breed/hound/images" -> MockResponse(
+          "/breed/hound/images/random/50" -> MockResponse(
             // language=json
             body = """
 {
@@ -167,7 +167,7 @@ class DogsTest {
     server.dispatcher = object : Dispatcher() {
       override fun dispatch(request: RecordedRequest): MockResponse =
         when (request.requestUrl?.encodedPath) {
-          "/breeds/image" -> MockResponse(
+          "/breeds/image/random/50" -> MockResponse(
             // language=json
             body = """
 {

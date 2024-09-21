@@ -8,7 +8,6 @@
 package land.sungbin.dogbrowser.circuit.overlay
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding

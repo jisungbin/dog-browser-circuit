@@ -47,6 +47,31 @@ public class BrowseDogPresenter @AssistedInject constructor(
   private val favorites: Favorites,
   @Assisted private val navigator: Navigator,
 ) : Presenter<BrowseDogScreen.State> {
+  private suspend fun requestDogs(
+    breeds: List<String>,
+    count: Int?,
+  ): Result<List<Dog>> = coroutineScope {
+    val results = (breeds.ifEmpty { listOf(null) }).fastMap { breed ->
+      async {
+        runSuspendCatching {
+          breed to this@BrowseDogPresenter.dogs.images(breed = breed, count = count)
+        }
+      }
+    }
+      .awaitAll()
+    val exception = results.firstNotNullOfOrNull(Result<*>::exceptionOrNull)
+
+    val dogs = results.fastFilter(Result<*>::isSuccess).fastFlatMap { result ->
+      val (breed, images) = result.getOrNull()!!
+      images.fastMap { image ->
+        Dog(breed = breed, image = image, favorite = false)
+      }
+    }
+
+    if (dogs.isEmpty()) Result.failure(exception ?: Exception("No dogs found"))
+    else Result.success(dogs)
+  }
+
   @Composable override fun present(): BrowseDogScreen.State {
     val scope = rememberCoroutineScope()
 
@@ -70,34 +95,7 @@ public class BrowseDogPresenter @AssistedInject constructor(
       }
     }
 
-    suspend fun requestDogs(breeds: List<String>, count: Int?): Result<List<Dog>> = coroutineScope {
-      val results = (breeds.ifEmpty { listOf(null) }).fastMap { breed ->
-        async {
-          runSuspendCatching {
-            breed to this@BrowseDogPresenter.dogs.images(breed = breed, count = count)
-          }
-        }
-      }
-        .awaitAll()
-      val exception = results.firstNotNullOfOrNull(Result<*>::exceptionOrNull)
-
-      val dogs = results.fastFilter(Result<*>::isSuccess).fastFlatMap { result ->
-        val (breed, images) = result.getOrNull()!!
-        images.fastMap { image ->
-          Dog(breed = breed, image = image, favorite = false)
-        }
-      }
-
-      if (dogs.isEmpty()) Result.failure(exception ?: Exception("No dogs found"))
-      else Result.success(dogs)
-    }
-
-    LaunchedEffect(Unit) {
-      browseDogsResult = requestDogs(breeds = emptyList(), count = null)
-    }
-
-    return BrowseDogScreen.State(dogs = dogs, breeds = breedsResult)
-    { event ->
+    return BrowseDogScreen.State(dogs = dogs, breeds = breedsResult) { event ->
       when (event) {
         is BrowseDogScreen.Event.Browse -> {
           scope.launch { browseDogsResult = requestDogs(event.breeds, event.count) }

@@ -88,6 +88,10 @@ import land.sungbin.dogbrowser.circuit.ui.LocalSnackbarHost
     }
   }
 
+  LaunchedEffect(Unit) {
+    state.eventSink(BrowseDogScreen.Event.Browse(breeds = selectedBreeds))
+  }
+
   Column(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(8.dp),

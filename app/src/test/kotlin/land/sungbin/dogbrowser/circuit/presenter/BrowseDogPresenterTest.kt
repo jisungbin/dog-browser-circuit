@@ -70,7 +70,7 @@ class BrowseDogPresenterTest {
       """.trimIndent(),
     )
 
-    "/breeds/image" respond MockResponse(
+    "/breeds/image/random/50" respond MockResponse(
       // language=json
       body = """
 {
@@ -84,7 +84,7 @@ class BrowseDogPresenterTest {
       """.trimIndent(),
     )
 
-    "/breed/hound/images" respond MockResponse(
+    "/breed/hound/images/random/50" respond MockResponse(
       // language=json
       body = """
 {
@@ -153,7 +153,7 @@ class BrowseDogPresenterTest {
     server.dispatcher = defaultDispatcher
     presenter.test {
       skipItems(1) // load breeds
-      awaitItem().eventSink(BrowseDogScreen.Event.Browse(breed = "hound"))
+      awaitItem().eventSink(BrowseDogScreen.Event.Browse(breeds = listOf("hound")))
 
       assertThat(awaitItem().dogs)
         .isSuccess()
@@ -268,7 +268,7 @@ class BrowseDogPresenterTest {
         """.trimIndent(),
       )
 
-      "/breeds/image" respond MockResponse(
+      "/breeds/image/random/50" respond MockResponse(
         // language=json
         body = """
 {
