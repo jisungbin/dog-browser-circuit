@@ -52,6 +52,7 @@ kotlin {
       "kotlinx.coroutines.FlowPreview",
       "androidx.compose.foundation.layout.ExperimentalLayoutApi",
       "androidx.compose.material3.ExperimentalMaterial3Api",
+      "androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi",
     )
   }
   sourceSets.all {
@@ -73,7 +74,8 @@ dependencies {
   ksp(libs.android.hilt.ksp)
 
   implementation(libs.compose.foundation)
-  implementation(libs.compose.material3)
+  implementation(libs.compose.material3.core)
+  implementation(libs.compose.material3.windowSizeClass)
   implementation(libs.compose.coil)
   implementation(libs.compose.telephoto)
   implementation(libs.compose.activity)

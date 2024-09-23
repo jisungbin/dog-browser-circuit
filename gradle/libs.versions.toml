@@ -54,7 +54,9 @@ androidx-datastore = { module = "androidx.datastore:datastore-preferences", vers
 androidx-palette = { module = "androidx.palette:palette", version.ref = "androidx-palette" }
 
 compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
+compose-material3-core = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
+compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "compose-material3" }
+
 compose-coil = { module = "io.coil-kt:coil-compose", version.ref = "compose-coil" }
 compose-telephoto = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "compose-telephoto" }
 compose-activity = { module = "androidx.activity:activity-compose", version.ref = "compose-activity" }

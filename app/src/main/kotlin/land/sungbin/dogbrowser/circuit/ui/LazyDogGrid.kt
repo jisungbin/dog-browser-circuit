@@ -7,6 +7,7 @@
 
 package land.sungbin.dogbrowser.circuit.ui
 
+import android.app.Activity
 import android.graphics.Bitmap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,6 +31,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -89,16 +92,22 @@ import land.sungbin.dogbrowser.circuit.screen.BrowseDogScreen
   if (dogs.isEmpty()) {
     DogsEmpty(modifier = modifier.wrapContentSize())
   } else {
+    val widthSize = calculateWindowSizeClass(context as Activity).widthSizeClass
+    val minCellSize = when (widthSize) {
+      WindowWidthSizeClass.Compact -> 100.dp
+      else -> 250.dp
+    }
+
     LazyVerticalStaggeredGrid(
       modifier = modifier,
-      columns = StaggeredGridCells.Adaptive(minSize = 250.dp),
+      columns = StaggeredGridCells.Adaptive(minSize = minCellSize),
       contentPadding = contentPadding,
       verticalItemSpacing = 4.dp,
       horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
       items(items = dogs, key = Dog::image) { dog ->
         DogImage(
-          modifier = modifier.fillMaxWidth(),
+          // TODO modifier = Modifier.heightIn(max = maxCellHeight),
           dog = dog,
           eventSink = eventSink,
         )
@@ -124,7 +133,6 @@ private val dogImageShape = RoundedCornerShape(size = 8.dp)
       .clip(dogImageShape)
       .clickable { eventSink(BrowseDogScreen.Event.GoToViewer(dog)) },
   ) {
-    // TODO Modifier.heightIn(max = 650.dp)
     AsyncImage(
       modifier = Modifier.fillMaxWidth(),
       model = dog.image,
