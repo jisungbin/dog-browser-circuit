@@ -1,5 +1,5 @@
 [versions]
-gradle-android = "8.6.1"
+gradle-android = "8.7.1"
 
 kotlin-core = "2.0.20"
 kotlin-coroutines = "1.9.0"
