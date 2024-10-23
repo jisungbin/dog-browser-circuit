@@ -3,7 +3,7 @@ gradle-android = "8.6.1"
 
 kotlin-core = "2.0.20"
 kotlin-coroutines = "1.9.0"
-kotlin-symbolProcessing = "2.0.20-1.0.25"
+kotlin-symbolProcessing = "2.0.21-1.0.26"
 kotlin-immutableCollections = "0.3.8"
 
 android-hilt = "2.52"
