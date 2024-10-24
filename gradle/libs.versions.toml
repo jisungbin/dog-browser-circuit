@@ -24,7 +24,7 @@ okio = "3.9.1"
 okhttp = "5.0.0-alpha.14"
 moshi = "1.15.1"
 
-circuit = "0.24.0"
+circuit = "0.25.0"
 timber = "5.0.1"
 
 spotless = "6.25.0"
